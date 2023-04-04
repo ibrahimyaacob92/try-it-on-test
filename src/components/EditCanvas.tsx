@@ -59,7 +59,7 @@ function EditCanvas({
 
   return (
     <div>
-      <canvas ref={canvasRef} onClick={handleCanvasClick} />
+      <canvas className="w-full" ref={canvasRef} onClick={handleCanvasClick} />
     </div>
   );
 }

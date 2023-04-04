@@ -38,7 +38,7 @@ const Modal: FC<ModalProps> = ({ open, onClose, size = "md", children }) => {
       case "lg":
         return "max-w-lg";
       case "xl":
-        return "max-w-8xl";
+        return "max-w-6xl";
       default:
         return "max-w-md";
     }
