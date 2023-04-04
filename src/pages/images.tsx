@@ -134,11 +134,11 @@ const Images = () => {
             <EditCanvas
               imageUrl={selectedImage.url}
               eraserSize={eraserSize}
-              imageDataUrl={
+              initialImageDataUrl={
                 imageDataState.find((data) => data.id === selectedImage.id)
                   ?.data
               }
-              onImageUpdate={(imageDataUrl) =>
+              onImageEdit={(imageDataUrl) =>
                 handleImageUpdate(selectedImage.id, imageDataUrl)
               }
             />

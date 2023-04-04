@@ -2,14 +2,14 @@ import React, { useRef, useEffect, useState } from "react";
 
 interface Props {
   imageUrl: string;
-  imageDataUrl?: string;
-  onImageUpdate: (imageDataUrl: string) => void;
+  initialImageDataUrl?: string;
+  onImageEdit: (imageDataUrl: string) => void;
   eraserSize: number;
 }
 
 function EditCanvas({
-  imageDataUrl,
-  onImageUpdate,
+  initialImageDataUrl,
+  onImageEdit,
   imageUrl,
   eraserSize,
 }: Props) {
@@ -25,14 +25,14 @@ function EditCanvas({
 
     const img = new Image();
     img.crossOrigin = "*";
-    img.src = imageDataUrl || imageUrl;
+    img.src = initialImageDataUrl || imageUrl;
 
     img.onload = () => {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0);
     };
-  }, [imageUrl, imageDataUrl]);
+  }, [imageUrl, initialImageDataUrl]);
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -43,8 +43,8 @@ function EditCanvas({
     }
 
     const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    const x = (event.clientX - rect.left - 30) * 1.4;
+    const y = (event.clientY - rect.top + 10) * 1.3;
 
     ctx.save();
     ctx.beginPath();
@@ -54,7 +54,7 @@ function EditCanvas({
     ctx.restore();
 
     const imageDataUrl = canvas.toDataURL();
-    onImageUpdate(imageDataUrl);
+    onImageEdit(imageDataUrl);
   };
 
   return (
