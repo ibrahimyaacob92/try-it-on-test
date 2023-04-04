@@ -19,7 +19,6 @@ export const mainRouter = createTRPCRouter({
     .input(z.object({ prompt: z.string().min(10), imageUrl: z.string() }))
     .mutation(({ input }) => {
       // do some AI stuff here, probably best get user authentication as well
-
       const fileName = `edit-request-${new Date().getTime()}.json`;
       const publicFolder = path.join(process.cwd(), "public");
       const filePath = path.join(publicFolder, fileName);

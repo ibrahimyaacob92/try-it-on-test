@@ -18,16 +18,23 @@ const Images = () => {
   >([]);
 
   const { mutate } = api.main.uploadRequest.useMutation({
+    onMutate: () => setRequestEditImage(undefined),
     onSuccess: (d) => {
       setEditRequestPrompt("");
       alert(d.message);
     },
-    onMutate: () => setRequestEditImage(undefined),
-    onError: (e) => alert(e.message),
+    onError: ({ message }) => {
+      alert(message);
+    },
   });
   const [eraserSize, setEraserSize] = useState(10);
 
   const handleSubmitPrompt = () => {
+    if (editRequestPrompt.length < 10) {
+      alert("Must be more than 10 characters");
+      return;
+    }
+
     if (requestEditImage) {
       mutate({ prompt: editRequestPrompt, imageUrl: requestEditImage.url });
     }
@@ -49,6 +56,10 @@ const Images = () => {
   const handleReset = (imageId: number) => {
     setImageDataState(imageDataState.filter((data) => data.id !== imageId));
   };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <>
