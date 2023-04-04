@@ -10,11 +10,28 @@ type OutputType = RouterOutputs["main"]["getImages"][0];
 
 const Images = () => {
   const { data: imageList, isLoading } = api.main.getImages.useQuery();
+  const [requestEditImage, setRequestEditImage] = useState<OutputType>();
   const [selectedImage, setSelectedImage] = useState<OutputType>();
+  const [editRequestPrompt, setEditRequestPrompt] = useState("");
   const [imageDataState, setImageDataState] = useState<
     { data: string; id: number }[]
   >([]);
+
+  const { mutate } = api.main.uploadRequest.useMutation({
+    onSuccess: (d) => {
+      setEditRequestPrompt("");
+      alert(d.message);
+    },
+    onMutate: () => setRequestEditImage(undefined),
+    onError: (e) => alert(e.message),
+  });
   const [eraserSize, setEraserSize] = useState(10);
+
+  const handleSubmitPrompt = () => {
+    if (requestEditImage) {
+      mutate({ prompt: editRequestPrompt, imageUrl: requestEditImage.url });
+    }
+  };
 
   const handleImageUpdate = (imageId: number, imageData: string) => {
     const imageExist = imageDataState.find((data) => data.id === imageId);
@@ -61,7 +78,10 @@ const Images = () => {
                 >
                   Edit
                 </button>
-                <button className="grow rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700">
+                <button
+                  className="grow rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+                  onClick={() => setRequestEditImage(image)}
+                >
                   Request Edit
                 </button>
               </div>
@@ -69,7 +89,30 @@ const Images = () => {
           );
         })}
       </div>
-      <div></div>
+      <Modal
+        size="lg"
+        open={!!requestEditImage}
+        onClose={() => setRequestEditImage(undefined)}
+      >
+        <div className="flex flex-col gap-3">
+          <p className="font-semibold">
+            Tell the AI how do you want to edit the image!
+          </p>
+          <textarea
+            className="w-full rounded-lg border px-3 py-2 placeholder-gray-400 shadow-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
+            value={editRequestPrompt}
+            onChange={(e) => setEditRequestPrompt(e.target.value)}
+          />
+          <div className="flex justify-end">
+            <button
+              onClick={handleSubmitPrompt}
+              className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </Modal>
       <Modal
         open={!!selectedImage}
         onClose={() => setSelectedImage(undefined)}
@@ -90,7 +133,7 @@ const Images = () => {
             />
             <div className="flex justify-between">
               <div>
-                <p>Eraser Size</p>
+                <p className="font-size-sm">Eraser Size</p>
                 <EraserSizeController
                   size={eraserSize}
                   onChange={setEraserSize}
@@ -98,13 +141,13 @@ const Images = () => {
               </div>
               <div className="flex gap-2">
                 <button
-                  className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+                  className="rounded border border-blue-500 bg-transparent px-4 py-2 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white"
                   onClick={() => handleReset(selectedImage.id)}
                 >
                   Reset
                 </button>
                 <button
-                  className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+                  className="rounded border border-blue-500 bg-transparent px-4 py-2 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white"
                   onClick={() => setSelectedImage(undefined)}
                 >
                   Close
